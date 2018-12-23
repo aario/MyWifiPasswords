@@ -11,6 +11,8 @@ This app reads wpa_supplicant file (by default in `/data/misc/wifi/wpa_supplican
 
 This is specially useful when you have a guest at home or in office and you want to share the password with. Or when you're in a new hotel, just got the WIFI password from reception and want to share it with your companions. Or when you're in a party. Or... the possibilities are numerous. You don't have to open the wpa_supplicant file yourself and try to find the information you're looking for in it. MyWifiPasswords does this for you.
 
+<img src='screenshots/screenshot-1.png?raw=true'> <img src='screenshots/screenshot-2.png?raw=true'> <img src='screenshots/screenshot-3.png?raw=true'>
+
 ## Features
 - Lists WIFI passwords
 - Searches within SSIDs
