@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/show_layout"
+    android:background="@android:color/black"
+    tools:context=".ShowWifi">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="9dp"
+        tools:layout_editor_absoluteY="27dp">
+
+        <TextView
+            android:id="@+id/ssid"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textColor="@android:color/darker_gray"
+            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform" />
+
+        <TextView
+            android:id="@+id/psk"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform"
+            tools:layout_editor_absoluteY="19dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click to copy to clipboard"
+            android:textAlignment="center"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="italic"
+            tools:layout_editor_absoluteY="19dp" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

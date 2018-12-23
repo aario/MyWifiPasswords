@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v7.preference.EditTextPreference
+        android:background="@android:color/black"
+        android:defaultValue="/data/misc/wifi/wpa_supplicant.conf"
+        android:key="wpa_supplicant_path"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:summary="Warning: Make sure to enter correct value here or leave default if you don't know what you're doing."
+        android:title="WPA Supplicant File Path" />
+</PreferenceScreen>
