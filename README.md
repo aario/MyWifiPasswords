@@ -24,3 +24,7 @@ This is specially useful when you have a guest at home or in office and you want
 THIS APP NEEDS ROOT
 
 You can download the app from releases tab or from F-Droid.
+
+## Donations
+
+MyWifiPasswords is open source. It takes a lot of time and effort to write a software. If you found MyWifiPasswords usefull, please consider making a donation by clicking [here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UJTM2GDGPEFHA).
