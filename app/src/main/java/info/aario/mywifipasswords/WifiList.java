@@ -12,15 +12,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +37,18 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 public class WifiList extends AppCompatActivity {
     public static final String EXTRA_SSID = "info.aario.mywifipasswords.SSID";
     public static final String EXTRA_PSK = "info.aario.mywifipasswords.PSK";
     public static final String DEFAULT_WPA_SUPPLICANT_PATH = "/data/misc/wifi/wpa_supplicant.conf";
+    public static final String DEFAULT_WIFI_CONFIG_STORE_PATH = "/data/misc/wifi/WifiConfigStore.xml";
 
     CoordinatorLayout layout;
     ListView lvWifiConnections;
@@ -134,7 +151,29 @@ public class WifiList extends AppCompatActivity {
         return Connections;
     }
 
-    private void _populateWifiList(Map<String, String >Connections, String SearchText) {
+
+    private Map<String, String> _readWifiConfigStore(String FileContent) {
+        Map<String, String> Connections = new HashMap<String, String>();
+        try {
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(FileContent)));
+            XPath xpather = XPathFactory.newInstance().newXPath();
+            NodeList wificonfs = (NodeList) xpather.evaluate("/WifiConfigStoreData/NetworkList/Network/WifiConfiguration", doc, XPathConstants.NODESET);
+            for (int i = 0; i < wificonfs.getLength(); i++) {
+                Node conf = wificonfs.item(i);
+                String ssid = (String) xpather.evaluate("./string[@name='SSID']/text()", conf, XPathConstants.STRING);
+                String psk = (String) xpather.evaluate("./string[@name='PreSharedKey']/text()", conf, XPathConstants.STRING);
+                if (ssid.length() > 0 && psk.length() > 0) {
+                    Connections.put(ssid.substring(1, ssid.length() -1), psk.substring(1, psk.length() -1));
+                }
+            }
+        } catch (ParserConfigurationException | IOException | SAXException | XPathExpressionException e) {
+            Log.e("PARSE_WIFICONFIG", "WifiConfigStore.xml parse error:\n" + e.getStackTrace());
+        }
+        return Connections;
+    }
+
+
+    private void _populateWifiList(Map<String, String> Connections, String SearchText) {
         SortedSet<String> Ssids = new TreeSet<>(Connections.keySet());
         List<Map<String, String>> data = new ArrayList<Map<String, String>>();
         for (String Ssid : Ssids) {
@@ -173,26 +212,37 @@ public class WifiList extends AppCompatActivity {
         lvWifiConnections.setAdapter(Adapter);
     }
 
-    private String _getWpaSupplicantPath() {
-        SharedPreferences sharedPref =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPref.getString
-                (SettingsActivity.KEY_PREF_WPA_SUPPLICANT_PATH, DEFAULT_WPA_SUPPLICANT_PATH);
+
+    private String sucat(String filepath) {
+        try {
+            SimpleSuexec cat_exec = new SimpleSuexec(new String[]{"cat", filepath});
+            if (cat_exec.retval == 0 && cat_exec.stdout != null) {
+                return cat_exec.stdout;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            // No worries. File might not be there.
+        }
+        return null;
+    }
+
+
+    private Map<String, String> _getNetworks() {
+        // Networks in the Android 8+ wifi config store take precedence over a leftover wpa_supplicant file.
+        Map<String, String> connmap = new HashMap<String, String>();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String wpa_supplicant = sucat(sharedPref.getString(SettingsActivity.KEY_PREF_WPA_SUPPLICANT_PATH, DEFAULT_WPA_SUPPLICANT_PATH));
+        String wifi_config_store = sucat(sharedPref.getString(SettingsActivity.KEY_PREF_WIFI_CONFIG_STORE_PATH, DEFAULT_WIFI_CONFIG_STORE_PATH));
+        if (wpa_supplicant != null) connmap.putAll(_readWpaSupplicant(wpa_supplicant));
+        if (wifi_config_store != null) connmap.putAll(_readWifiConfigStore(wifi_config_store));
+        return connmap;
     }
     private void _reloadWifiList(String SearchText) {
-        ExecuteAsRootBase root = new ExecuteAsRootBase();
-        String WpaSupplicantPath = _getWpaSupplicantPath();
-        String output = root.execute("cat " + WpaSupplicantPath);
-        if (output.isEmpty()) {
-            output = "Provided wpa_supplicant path is wrong. Default value is: " + DEFAULT_WPA_SUPPLICANT_PATH;
-        } else if (!output.startsWith("Error")) {
-            Map<String, String> Connections = _readWpaSupplicant(output);
-            _populateWifiList(Connections, SearchText);
-            output = "Wifi list reloaded.";
-        }
-        Snackbar.make(layout, output, Snackbar.LENGTH_LONG)
+        Map<String, String> Connections = _getNetworks();
+        _populateWifiList(Connections, SearchText);
+        Snackbar.make(layout, "Wifi list reloaded.", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
-    };
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
