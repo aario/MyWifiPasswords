@@ -104,7 +104,7 @@ public class WifiList extends AppCompatActivity {
     }
 
     private String _findLineContaining(String[] Lines, String text) {
-        for (String Line: Lines) {
+        for (String Line : Lines) {
             if (Line.contains(text)) {
                 return Line;
             }
@@ -113,10 +113,10 @@ public class WifiList extends AppCompatActivity {
     }
 
     private String _getValueFromConfigLine(String Line) {
-        return Line.split("=")[1].replace("\"","");
+        return Line.split("=")[1].replace("\"", "");
     }
 
-    private String _getConfigValueByKey(String[]Lines, String Key) {
+    private String _getConfigValueByKey(String[] Lines, String Key) {
         String Line = _findLineContaining(Lines, Key + '=');
         if (Line.isEmpty()) {
             return "";
@@ -135,7 +135,7 @@ public class WifiList extends AppCompatActivity {
 
     private Map<String, String> _readWpaSupplicant(String FileContent) {
         String[] NetworkSections = FileContent.split("network[=][{]");
-        Map<String, String> Connections = new HashMap<String, String>();;
+        Map<String, String> Connections = new HashMap<String, String>();
         for (String NetworkSection : NetworkSections) {
             String[] NetworkSectionLines = NetworkSection.split("[}]")[0].split("\n");
             String Ssid = _getSsidFromNetworkSectionLines(NetworkSectionLines);
@@ -163,7 +163,7 @@ public class WifiList extends AppCompatActivity {
                 String ssid = (String) xpather.evaluate("./string[@name='SSID']/text()", conf, XPathConstants.STRING);
                 String psk = (String) xpather.evaluate("./string[@name='PreSharedKey']/text()", conf, XPathConstants.STRING);
                 if (ssid.length() > 0 && psk.length() > 0) {
-                    Connections.put(ssid.substring(1, ssid.length() -1), psk.substring(1, psk.length() -1));
+                    Connections.put(ssid.substring(1, ssid.length() - 1), psk.substring(1, psk.length() - 1));
                 }
             }
         } catch (ParserConfigurationException | IOException | SAXException | XPathExpressionException e) {
@@ -177,10 +177,7 @@ public class WifiList extends AppCompatActivity {
         SortedSet<String> Ssids = new TreeSet<>(Connections.keySet());
         List<Map<String, String>> data = new ArrayList<Map<String, String>>();
         for (String Ssid : Ssids) {
-            if (
-                   (!SearchText.isEmpty())
-                && (!Ssid.toLowerCase().contains(SearchText.toLowerCase()))
-            ) {
+            if ((!SearchText.isEmpty()) && (!Ssid.toLowerCase().contains(SearchText.toLowerCase()))) {
                 continue;
             }
             String Psk = Connections.get(Ssid);
@@ -196,13 +193,13 @@ public class WifiList extends AppCompatActivity {
                 android.R.layout.simple_list_item_2,
                 new String[]{"ssid", "psk"},
                 new int[]{
-                    android.R.id.text1,
-                    android.R.id.text2
+                        android.R.id.text1,
+                        android.R.id.text2
                 }
         ) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent){
-                View ItemView = super.getView(position,convertView,parent);
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View ItemView = super.getView(position, convertView, parent);
                 ((TextView) ItemView.findViewById(android.R.id.text1)).setTextColor(Color.GRAY);
                 ((TextView) ItemView.findViewById(android.R.id.text2)).setTextColor(Color.WHITE);
                 return ItemView;
@@ -237,6 +234,7 @@ public class WifiList extends AppCompatActivity {
         if (wifi_config_store != null) connmap.putAll(_readWifiConfigStore(wifi_config_store));
         return connmap;
     }
+
     private void _reloadWifiList(String SearchText) {
         Map<String, String> Connections = _getNetworks();
         _populateWifiList(Connections, SearchText);
