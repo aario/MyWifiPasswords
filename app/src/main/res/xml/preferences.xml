@@ -9,4 +9,15 @@
         android:singleLine="true"
         android:summary="Warning: Make sure to enter correct value here or leave default if you don't know what you're doing."
         android:title="WPA Supplicant File Path" />
+    <android.support.v7.preference.EditTextPreference
+        android:id="@+id/editTextPreference"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:defaultValue="/data/misc/wifi/WifiConfigStore.xml"
+        android:key="wifi_config_store_path"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:summary="Warning: Make sure to enter correct value here or leave default if you don't know what you're doing."
+        android:title="WifiConfigStore.xml File Path" />
 </PreferenceScreen>

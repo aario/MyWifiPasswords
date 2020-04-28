@@ -7,6 +7,7 @@ import android.view.MenuItem;
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String KEY_PREF_WPA_SUPPLICANT_PATH = "wpa_supplicant_path";
+    public static final String KEY_PREF_WIFI_CONFIG_STORE_PATH = "wifi_config_store_path";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

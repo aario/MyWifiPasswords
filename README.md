@@ -17,6 +17,7 @@ This is specially useful when you have a guest at home or in office and you want
 - Lists WIFI passwords
 - Searches within SSIDs
 - You can change the path for `wpa_supplicant.conf`
+- You can change the path for `WifiConfigStore.xml`
 - You can copy SSID or password to clipboard
 
 ## Install
